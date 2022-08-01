@@ -1,5 +1,5 @@
 import * as React from "react"
-import { graphql, PageProps } from "gatsby"
+import { graphql, Link, PageProps } from "gatsby"
 import Layout from "../../components/organisms/Layout"
 
 const Blog = ({ data: { allMdx } }: PageProps<Queries.BlogQuery>) => {
@@ -7,9 +7,9 @@ const Blog = ({ data: { allMdx } }: PageProps<Queries.BlogQuery>) => {
   return (
     <Layout pageTitle="Blog">
       {allMdx.edges.map(({ node: post }) => (
-        <a href={`//${location.host}/blog/${post.slug}`}>
+        <Link to={`/blog/${post.slug}`}>
           <h2>{post.frontmatter?.title}</h2>
-        </a>
+        </Link>
       ))}
     </Layout>
   )

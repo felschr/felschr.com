@@ -1,18 +1,15 @@
-import React from "react"
+import * as React from "react"
 import { graphql, PageProps } from "gatsby"
 import { MDXRenderer } from "gatsby-plugin-mdx"
 import Layout from "../components/organisms/Layout"
 
-const Page = ({ data: { mdx }, path }: PageProps<Queries.PageQuery>) => {
-  console.log("Page...", { path, mdx })
-  return (
-    <Layout pageTitle={mdx?.frontmatter?.title ?? ""}>
-      <MDXRenderer>
-        {mdx?.body ?? ""}
-      </MDXRenderer>
-    </Layout>
-  )
-}
+const Page = ({ data: { mdx }, path }: PageProps<Queries.PageQuery>) => (
+  <Layout pageTitle={mdx?.frontmatter?.title ?? ""}>
+    <MDXRenderer>
+      {mdx?.body ?? ""}
+    </MDXRenderer>
+  </Layout>
+)
 
 export const query = graphql`
   query Page($id: String) {

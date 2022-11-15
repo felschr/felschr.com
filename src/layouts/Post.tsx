@@ -3,7 +3,7 @@ import { graphql, Link as GatsbyLink, PageProps } from "gatsby"
 import { GatsbyImage, getImage } from "gatsby-plugin-image"
 import { MDXRenderer } from "gatsby-plugin-mdx"
 import NavigateNextIcon from "@mui/icons-material/NavigateNext"
-import Layout from "../../components/organisms/Layout"
+import Layout from "../components/organisms/Layout"
 
 import { defineCustomElements as deckDeckGoHighlightElement } from "@deckdeckgo/highlight-code/dist/loader";
 import { Breadcrumbs, Link } from "@mui/material";

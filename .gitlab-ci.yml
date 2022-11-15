@@ -4,7 +4,7 @@ cache:
   paths:
     - node_modules/
     # - .cache/
-    - public/
+    # - public/
 
 pages:
   stage: deploy

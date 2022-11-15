@@ -1,6 +1,6 @@
+import React, { ReactNode, useMemo } from "react"
 import { AppBar, Box, Button, Container, createTheme, CssBaseline, Link, ThemeProvider, Toolbar, Typography, useMediaQuery, useTheme } from "@mui/material"
 import CodeIcon from "@mui/icons-material/Code"
-import { ReactNode, useMemo } from "react"
 import { Link as GatsbyLink } from "gatsby"
 import { Footer } from "../atoms/Footer"
 

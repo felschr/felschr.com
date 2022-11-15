@@ -6,8 +6,8 @@ import { Link as GatsbyLink } from "gatsby"
 import { Footer } from "../atoms/Footer"
 
 const pages = [
-  { title: "Home", href: "/" },
-  { title: "Blog", href: "/blog" },
+  { title: "Home", to: "/" },
+  { title: "Blog", to: "/blog" },
 ]
 
 type LayoutProps = {
@@ -45,12 +45,13 @@ const Layout = ({ pageTitle, preTitle, children }: LayoutProps) => {
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "end" }}>
-            {pages.map(({ title, href }) => (
+            {pages.map(({ title, to }) => (
               <Button
-                key={href}
+                LinkComponent={GatsbyLink}
+                key={to}
                 color="inherit"
                 sx={{ my: 2, color: "white", display: "block" }}
-                {...{ href }}
+                {...{ to }}
               >
                 {title}
               </Button>

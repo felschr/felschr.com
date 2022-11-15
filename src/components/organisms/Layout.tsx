@@ -21,7 +21,7 @@ const Layout = ({ pageTitle, preTitle, children }: LayoutProps) => {
 
   return (
     <main style={{ border: 0 }}>
-      <title>{pageTitle}</title>
+      <title>{pageTitle} — felschr's blog</title>
 
       <AppBar position="fixed">
         <Toolbar>

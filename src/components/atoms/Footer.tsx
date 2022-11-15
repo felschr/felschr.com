@@ -15,9 +15,8 @@ export const Footer = ({ children }: FooterProps) => {
       bottom={0}
       padding={2}
       width="100%"
-      borderTop={`1px solid ${theme.palette.grey[200].toString()}`}
       gap={2}
-      style={{ backgroundColor: theme.palette.background.default.toString()}}
+      sx={{ backgroundColor: theme.palette.background.default.toString(), boxShadow: 2 }}
     >
       {children}
     </Box>

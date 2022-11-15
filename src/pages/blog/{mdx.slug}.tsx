@@ -1,17 +1,22 @@
 import React from "react"
 import { graphql, Link as GatsbyLink, PageProps } from "gatsby"
+import { GatsbyImage, getImage } from "gatsby-plugin-image"
 import { MDXRenderer } from "gatsby-plugin-mdx"
 import NavigateNextIcon from "@mui/icons-material/NavigateNext"
 import Layout from "../../components/organisms/Layout"
 
 import { defineCustomElements as deckDeckGoHighlightElement } from "@deckdeckgo/highlight-code/dist/loader";
 import { Breadcrumbs, Link } from "@mui/material";
+import { Box } from "@mui/system"
 deckDeckGoHighlightElement();
 
 const BlogPost = ({ data: { mdx }, path }: PageProps<Queries.BlogPostQuery>) => {
+  const featuredImage = getImage(mdx?.frontmatter?.featuredImage?.childImageSharp?.gatsbyImageData!)
+
   return (
     <Layout
-      pageTitle={
+      pageTitle={mdx?.frontmatter?.title ?? ""}
+      preTitle={
         <>
           <Breadcrumbs
             separator={<NavigateNextIcon fontSize="small" />}
@@ -34,7 +39,14 @@ const BlogPost = ({ data: { mdx }, path }: PageProps<Queries.BlogPostQuery>) => 
               {mdx?.frontmatter?.title}
             </Link>
           </Breadcrumbs>
-          {mdx?.frontmatter?.title ?? ""}
+          {featuredImage && (
+          <Box display="flex" justifyContent="center">
+            <GatsbyImage
+              image={featuredImage}
+              alt={mdx?.frontmatter?.featuredImageAlt ?? ""}
+            />
+          </Box>
+          )}
         </>
       }
     >
@@ -54,6 +66,12 @@ export const query = graphql`
         title
         published
         updated
+        featuredImage {
+          childImageSharp {
+            gatsbyImageData(width: 800)
+          }
+        }
+        featuredImageAlt
       }
     }
   }

@@ -1,8 +1,9 @@
 import { ReactNode } from "react"
 import { GatsbyLinkProps, graphql, Link, PageProps } from "gatsby"
 import Layout from "../../components/organisms/Layout"
-import { Card, CardContent, Grid, Typography } from "@mui/material"
+import { Card, CardContent, CardMedia, Grid, Typography } from "@mui/material"
 import styled from "@emotion/styled"
+import { GatsbyImage, getImage } from "gatsby-plugin-image"
 
 type PostProps = {
   size?: "normal" | "highlight"
@@ -21,9 +22,23 @@ const Post = ({ size = "normal", post }: PostProps) => {
     }
   `
 
+  const featuredImage = getImage(post.frontmatter?.featuredImage?.childImageSharp?.gatsbyImageData!)
+
   return (
     <Grid item xs={size === "highlight" ? 12 : 4}>
       <Card>
+        {featuredImage && (
+          <CardMedia
+            objectFit="contain"
+            component={(props) => (
+              <GatsbyImage
+                image={featuredImage}
+                alt={post.frontmatter?.featuredImageAlt ?? ""}
+                {...props}
+              />
+            )}
+          />
+        )}
         <CardContent>
           <Typography variant="h5" gutterBottom>
             <PostLink>
@@ -71,6 +86,12 @@ export const query = graphql`
           frontmatter {
             title
             published
+            featuredImage {
+              childImageSharp {
+                gatsbyImageData(height: 200)
+              }
+            }
+            featuredImageAlt
           }
         }
       }

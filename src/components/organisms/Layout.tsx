@@ -10,11 +10,12 @@ const pages = [
 ]
 
 type LayoutProps = {
-  pageTitle: string | ReactNode
+  pageTitle: string
+  preTitle?: ReactNode
   children: ReactNode
 }
 
-const Layout = ({ pageTitle, children }: LayoutProps) => {
+const Layout = ({ pageTitle, preTitle, children }: LayoutProps) => {
   const theme = useTheme()
 
   return (
@@ -58,6 +59,7 @@ const Layout = ({ pageTitle, children }: LayoutProps) => {
       </AppBar>
 
       <Container style={{ marginTop: 68.5, marginBottom: 80, minHeight: "100%" }}>
+        {preTitle}
         <Typography variant="h1">{pageTitle}</Typography>
         {children}
       </Container>

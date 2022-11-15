@@ -50,14 +50,14 @@ const config: GatsbyConfig = {
       resolve: "gatsby-source-filesystem",
       options: {
         name: "pages",
-        path: "./src/pages/"
+        path: "./src/content/pages/"
       },
     },
     {
       resolve: "gatsby-source-filesystem",
       options: {
         name: "posts",
-        path: "./src/posts/",
+        path: "./src/content/posts/",
       },
     }
   ]

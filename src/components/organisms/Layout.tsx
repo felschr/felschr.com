@@ -1,4 +1,5 @@
-import React, { ReactNode, useMemo } from "react"
+import * as React from "react"
+import { ReactNode, useMemo } from "react"
 import { AppBar, Box, Button, Container, createTheme, CssBaseline, Link, ThemeProvider, Toolbar, Typography, useMediaQuery, useTheme } from "@mui/material"
 import CodeIcon from "@mui/icons-material/Code"
 import { Link as GatsbyLink } from "gatsby"

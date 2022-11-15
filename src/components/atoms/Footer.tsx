@@ -1,4 +1,5 @@
-import React, { ReactNode } from "react"
+import * as React from "react"
+import { ReactNode } from "react"
 import { Box, useTheme } from "@mui/material"
 
 export type FooterProps = {

@@ -1,4 +1,5 @@
-import React, { ReactNode } from "react"
+import * as React from "react"
+import { ReactNode } from "react"
 import { GatsbyLinkProps, graphql, Link, PageProps } from "gatsby"
 import Layout from "../../components/organisms/Layout"
 import { Card, CardContent, CardMedia, Grid, Typography } from "@mui/material"

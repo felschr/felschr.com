@@ -29,8 +29,8 @@ const Layout = ({ pageTitle, preTitle, children }: LayoutProps) => {
           <Typography
             variant="h6"
             noWrap
-            component="a"
-            href="/"
+            component={GatsbyLink}
+            to="/"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },

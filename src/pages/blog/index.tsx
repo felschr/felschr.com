@@ -1,27 +1,73 @@
-import * as React from "react"
-import { graphql, Link, PageProps } from "gatsby"
+import { ReactNode } from "react"
+import { GatsbyLinkProps, graphql, Link, PageProps } from "gatsby"
 import Layout from "../../components/organisms/Layout"
+import { Card, CardContent, Grid, Typography } from "@mui/material"
+import styled from "@emotion/styled"
+
+type PostProps = {
+  size?: "normal" | "highlight"
+  post: Queries.BlogQuery["allMdx"]["edges"][0]["node"]
+}
+
+const Post = ({ size = "normal", post }: PostProps) => {
+  const PostLink = styled((props: { children: ReactNode }) => (
+    <Link to={`/blog/${post.slug}`} {...props} />
+  ))`
+    color: inherit;
+    text-decoration: inherit;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  `
+
+  return (
+    <Grid item xs={size === "highlight" ? 12 : 4}>
+      <Card>
+        <CardContent>
+          <Typography variant="h5" gutterBottom>
+            <PostLink>
+              {post.frontmatter?.title}
+            </PostLink>
+          </Typography>
+
+          <Typography fontStyle="normal" color="GrayText">
+            <PostLink>
+              {post.excerpt}
+            </PostLink>
+          </Typography>
+        </CardContent>
+      </Card>
+    </Grid>
+  )
+}
 
 const Blog = ({ data: { allMdx } }: PageProps<Queries.BlogQuery>) => {
-  console.log("allMdx", allMdx)
+  const [highlight, ...posts] = allMdx.edges
+
   return (
     <Layout pageTitle="Blog">
-      {allMdx.edges.map(({ node: post }) => (
-        <Link to={`/blog/${post.slug}`}>
-          <h2>{post.frontmatter?.title}</h2>
-        </Link>
-      ))}
+      <Grid container spacing={2} alignItems="stretch">
+        <Post size="highlight" post={highlight.node} />
+        {posts.map(({ node: post }) => (
+          <Post post={post} />
+        ))}
+      </Grid>
     </Layout>
   )
 }
 
 export const query = graphql`
   query Blog {
-    allMdx {
+    allMdx(
+      sort: { fields: [frontmatter___published], order: DESC }
+      filter: { fields: { source: { eq: "posts" } }, frontmatter: { published: { ne: null } } }
+    ) {
       edges {
         node {
           id
           slug
+          excerpt(pruneLength: 400)
           frontmatter {
             title
             published

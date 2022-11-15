@@ -2,8 +2,10 @@ import type { GatsbyConfig } from "gatsby";
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `felschr.com`,
-    siteUrl: `https://felschr.com`
+    title: "felschr's dev blog",
+    headline: "Engineering software with passion",
+    author: "Felix Schröter",
+    siteUrl: "https://felschr.com",
   },
   graphqlTypegen: true,
   plugins: [
@@ -25,7 +27,9 @@ const config: GatsbyConfig = {
           {
             resolve: "gatsby-remark-highlight-code",
             options: {
-              terminal: "none"
+              terminal: "carbon",
+              theme: "one-dark",
+              lineNumbers: true,
             }
           },
         ],
@@ -34,6 +38,7 @@ const config: GatsbyConfig = {
     "gatsby-plugin-mdx-frontmatter",
     "gatsby-plugin-sharp",
     "gatsby-transformer-sharp",
+    "gatsby-plugin-mdx-source-name",
     {
       resolve: "gatsby-source-filesystem",
       options: {

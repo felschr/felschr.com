@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+
+  --deckgo-highlight-code-carbon-toolbar-display: none;
+}
+
+a {
+  color: rgb(51, 125, 255);
+}

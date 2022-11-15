@@ -1,11 +1,33 @@
 import styled from "@emotion/styled"
-import { Card as Card_, CardContent, Grid, Typography } from "@mui/material"
+import { Box, Card as Card_, CardContent, Grid, Typography } from "@mui/material"
+import {
+  AutoMode as AutoModeIcon,
+  BugReport as BugReportIcon,
+  Cloud as CloudIcon,
+  School as SchoolIcon,
+  SettingsSuggest as SettingsSuggestIcon,
+  SvgIconComponent
+} from "@mui/icons-material"
 import { Link } from "gatsby"
 import Layout from "../components/organisms/Layout"
 
 const Card = styled(Card_)`
   height: 100%;
 `
+
+type IconProps = {
+  Icon: SvgIconComponent
+  title: string
+}
+
+const Title = ({ Icon, title }: IconProps) => (
+  <Box display="flex" gap={1}>
+    <Typography variant="h5" gutterBottom>
+      {title}
+    </Typography>
+    <Icon fontSize="large" />
+  </Box>
+)
 
 const IndexPage = () => {
   return (
@@ -14,11 +36,9 @@ const IndexPage = () => {
         <Grid item xs={4}>
           <Card>
             <CardContent>
-              <Typography variant="h5" gutterBottom>
-                Cloud
-              </Typography>
+              <Title Icon={CloudIcon} title="Cloud" />
 
-              I'm experienced in designing & implementing Cloud-native software on all major Cloud platforms that is tailored to the customer's needs. Containers, microservices, serverless setups — I'm familiar with all the important tools.
+              I'm experienced in designing & implementing Cloud-native solutions tailored to highly specialised needs. Containers, microservices, serverless setups — I'm familiar with all the important tools.
             </CardContent>
           </Card>
         </Grid>
@@ -26,9 +46,7 @@ const IndexPage = () => {
         <Grid item xs={4}>
           <Card>
             <CardContent>
-              <Typography variant="h5" gutterBottom>
-                Type safety
-              </Typography>
+              <Title Icon={BugReportIcon} title="Type safety" />
 
               I love strong type systems. They avoid runtime exceptions like{" "}
               <Link to="https://en.wikipedia.org/wiki/Null_pointer#History">
@@ -42,9 +60,7 @@ const IndexPage = () => {
         <Grid item xs={4}>
           <Card>
             <CardContent>
-              <Typography variant="h5" gutterBottom>
-                Reproducibility
-              </Typography>
+              <Title Icon={SettingsSuggestIcon} title="Reproducibility" />
 
               "But it works on my machine" — how many times did you hear this?
               Running into issues building software can be frustrating & time consuming.
@@ -57,9 +73,7 @@ const IndexPage = () => {
         <Grid item xs={4}>
           <Card>
             <CardContent>
-              <Typography variant="h5" gutterBottom>
-                DevOps
-              </Typography>
+              <Title Icon={AutoModeIcon} title="DevOps" />
 
               Plan, Develop, Deliver, Operate — Repeat
               DevOps is about continually providing value to customers.
@@ -72,9 +86,7 @@ const IndexPage = () => {
         <Grid item xs={4}>
           <Card>
             <CardContent>
-              <Typography variant="h5" gutterBottom>
-                Learning
-              </Typography>
+              <Title Icon={SchoolIcon} title="Learning" />
 
               Software development is such a vast field and I love learning about new technologies.
               You can expect software built on modern state-of-the-art technologies & methodologies from me.

@@ -21,6 +21,55 @@ type IconProps = {
   title: string
 }
 
+const content = [
+  {
+    title: "Cloud",
+    icon: CloudIcon,
+    description: "I'm experienced in designing & implementing Cloud-native solutions tailored to highly specialised needs. Containers, microservices, serverless setups — I'm familiar with all the important tools.",
+  },
+  {
+    title: "Type safety",
+    icon: BugReportIcon,
+    description: (
+      <>
+        I love strong type systems. They avoid runtime exceptions like{" "}
+        <Link to="https://en.wikipedia.org/wiki/Null_pointer#History">
+          the billion-dollar mistake
+        </Link>{" "}
+        by checking for errors at compile time. A good type system enforces error handling & allows developers to focus more on actual application logic.
+      </>
+    ),
+  },
+  {
+    title: "Reproducibility",
+    icon: SettingsSuggestIcon,
+    description: `
+      "But it works on my machine" — how many times did you hear this?
+      Running into issues building software can be frustrating & time consuming.
+      That's where reproducible builds with declarative environments come to the rescue!
+      Nix is one such system that allows you to use the same dependencies on all developers' machines & in CI/CD pipelines.
+      `,
+  },
+  {
+    title: "DevOps",
+    icon: AutoModeIcon,
+    description: `
+      Plan, Develop, Deliver, Operate — Repeat
+      DevOps is about continually providing value to customers.
+
+      Teams who adopt DevOps streamline their processes & automate their systems. This allows rapidly delivering features & maintaining a reliable system.
+    `,
+  },
+  {
+    title: "Learning",
+    icon: SchoolIcon,
+    description: `
+      Software development is such a vast field and I love learning about new technologies.
+      You can expect software built on modern state-of-the-art technologies & methodologies from me.
+    `,
+  },
+]
+
 const Title = ({ Icon, title }: IconProps) => (
   <Box display="flex" gap={1}>
     <Typography variant="h5" gutterBottom>
@@ -34,66 +83,17 @@ const IndexPage = () => {
   return (
     <Layout pageTitle="Home">
       <Grid container spacing={2} alignItems="stretch">
-        <Grid item xs={4}>
-          <Card>
-            <CardContent>
-              <Title Icon={CloudIcon} title="Cloud" />
+        {content.map(({ title, icon, description }) =>
+          <Grid item xs={4}>
+            <Card>
+              <CardContent>
+                <Title Icon={icon} title={title} />
 
-              I'm experienced in designing & implementing Cloud-native solutions tailored to highly specialised needs. Containers, microservices, serverless setups — I'm familiar with all the important tools.
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={4}>
-          <Card>
-            <CardContent>
-              <Title Icon={BugReportIcon} title="Type safety" />
-
-              I love strong type systems. They avoid runtime exceptions like{" "}
-              <Link to="https://en.wikipedia.org/wiki/Null_pointer#History">
-                the billion-dollar mistake
-              </Link>{" "}
-              by checking for errors at compile time. A good type system enforces error handling & allows developers to focus more on actual application logic.
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={4}>
-          <Card>
-            <CardContent>
-              <Title Icon={SettingsSuggestIcon} title="Reproducibility" />
-
-              "But it works on my machine" — how many times did you hear this?
-              Running into issues building software can be frustrating & time consuming.
-              That's where reproducible builds with declarative environments come to the rescue!
-              Nix is one such system that allows you to use the same dependencies on all developers' machines & in CI/CD pipelines.
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={4}>
-          <Card>
-            <CardContent>
-              <Title Icon={AutoModeIcon} title="DevOps" />
-
-              Plan, Develop, Deliver, Operate — Repeat
-              DevOps is about continually providing value to customers.
-
-              Teams who adopt DevOps streamline their processes & automate their systems. This allows rapidly delivering features & maintaining a reliable system.
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={4}>
-          <Card>
-            <CardContent>
-              <Title Icon={SchoolIcon} title="Learning" />
-
-              Software development is such a vast field and I love learning about new technologies.
-              You can expect software built on modern state-of-the-art technologies & methodologies from me.
-            </CardContent>
-          </Card>
-        </Grid>
+                {description}
+              </CardContent>
+            </Card>
+          </Grid>
+        )}
       </Grid>
     </Layout>
   )

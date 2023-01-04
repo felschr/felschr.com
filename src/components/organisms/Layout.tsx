@@ -2,8 +2,10 @@ import * as React from "react"
 import { ReactNode, useMemo } from "react"
 import { AppBar, Box, Button, Container, experimental_extendTheme as extendTheme, CssBaseline, Link, Toolbar, Typography, useTheme, Experimental_CssVarsProvider as CssVarsProvider, getInitColorSchemeScript, Tooltip } from "@mui/material"
 import CodeIcon from "@mui/icons-material/Code"
+import GitHubIcon from "@mui/icons-material/GitHub"
 import LinkedInIcon from "@mui/icons-material/LinkedIn"
 import { BsMastodon } from "react-icons/bs"
+import { FaGitlab } from "react-icons/fa"
 import { Link as GatsbyLink } from "gatsby"
 import { Footer } from "../atoms/Footer"
 
@@ -72,6 +74,16 @@ const Layout = ({ pageTitle, preTitle, children }: LayoutProps) => {
       </Container>
 
       <Footer>
+        <Tooltip title="GitLab">
+          <Link rel="me" href="https://gitlab.com/felschr">
+            <FaGitlab />
+          </Link>
+        </Tooltip>
+        <Tooltip title="GitHub">
+          <Link rel="me" href="https://github.com/felschr">
+            <GitHubIcon />
+          </Link>
+        </Tooltip>
         <Tooltip title="Mastodon">
           <Link rel="me" href="https://todon.eu/@felschr">
             <BsMastodon />

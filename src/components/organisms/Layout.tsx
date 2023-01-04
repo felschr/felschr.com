@@ -1,7 +1,9 @@
 import * as React from "react"
 import { ReactNode, useMemo } from "react"
-import { AppBar, Box, Button, Container, experimental_extendTheme as extendTheme, CssBaseline, Link, Toolbar, Typography, useTheme, Experimental_CssVarsProvider as CssVarsProvider, getInitColorSchemeScript } from "@mui/material"
+import { AppBar, Box, Button, Container, experimental_extendTheme as extendTheme, CssBaseline, Link, Toolbar, Typography, useTheme, Experimental_CssVarsProvider as CssVarsProvider, getInitColorSchemeScript, Tooltip } from "@mui/material"
 import CodeIcon from "@mui/icons-material/Code"
+import LinkedInIcon from "@mui/icons-material/LinkedIn"
+import { BsMastodon } from "react-icons/bs"
 import { Link as GatsbyLink } from "gatsby"
 import { Footer } from "../atoms/Footer"
 
@@ -67,8 +69,19 @@ const Layout = ({ pageTitle, preTitle, children }: LayoutProps) => {
       </Container>
 
       <Footer>
-        <Link rel="me" href="https://todon.eu/@felschr">Mastodon</Link>
-        <GatsbyLink to="/terms-of-service">Terms of Service</GatsbyLink>
+        <Tooltip title="Mastodon">
+          <Link rel="me" href="https://todon.eu/@felschr">
+            <BsMastodon />
+          </Link>
+        </Tooltip>
+        <Tooltip title="LinkedIn">
+          <Link rel="me" href="https://www.linkedin.com/in/schroeter">
+            <LinkedInIcon />
+          </Link>
+        </Tooltip>
+        <Typography component={GatsbyLink} to="/terms-of-service" color="inherit">
+          Terms of Service
+        </Typography>
       </Footer>
     </main>
   )

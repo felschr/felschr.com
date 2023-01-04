@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/package",
   "compilerOptions": {
     "target": "esnext",
     "lib": ["dom", "esnext"],

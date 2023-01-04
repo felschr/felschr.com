@@ -1,6 +1,6 @@
 import * as React from "react"
 import { ReactNode, useMemo } from "react"
-import { AppBar, Box, Button, Container, createTheme, CssBaseline, Link, ThemeProvider, Toolbar, Typography, useMediaQuery, useTheme } from "@mui/material"
+import { AppBar, Box, Button, Container, experimental_extendTheme as extendTheme, CssBaseline, Link, Toolbar, Typography, useTheme, Experimental_CssVarsProvider as CssVarsProvider, getInitColorSchemeScript } from "@mui/material"
 import CodeIcon from "@mui/icons-material/Code"
 import { Link as GatsbyLink } from "gatsby"
 import { Footer } from "../atoms/Footer"
@@ -74,27 +74,23 @@ const Layout = ({ pageTitle, preTitle, children }: LayoutProps) => {
   )
 }
 
+const theme = extendTheme({
+  colorSchemes: {
+    light: {},
+    dark: {},
+  },
+  typography: {
+    h1: { fontSize: 48, paddingBottom: 20 },
+  }
+})
+
 const AppLayout = (props: LayoutProps) => {
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-
-  const theme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: prefersDarkMode ? "dark" : "light",
-        },
-        typography: {
-          h1: { fontSize: 48, paddingBottom: 20 },
-        }
-      }),
-    [prefersDarkMode],
-  );
-
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <CssVarsProvider theme={theme} defaultMode="system">
+      {getInitColorSchemeScript({ defaultMode: "system" })}
+      <CssBaseline enableColorScheme />
       <Layout {...props} />
-    </ThemeProvider>
+    </CssVarsProvider>
   )
 }
 

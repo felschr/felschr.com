@@ -84,7 +84,7 @@ const IndexPage = () => {
     <Layout pageTitle="Home">
       <Grid container spacing={2} alignItems="stretch">
         {content.map(({ title, icon, description }) =>
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <Card>
               <CardContent>
                 <Title Icon={icon} title={title} />

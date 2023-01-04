@@ -24,9 +24,15 @@ const Post = ({ size = "normal", post }: PostProps) => {
   `
 
   const featuredImage = getImage(post.frontmatter?.featuredImage?.childImageSharp?.gatsbyImageData!)
+  const isHighlight = size === "highlight"
 
   return (
-    <Grid item xs={size === "highlight" ? 12 : 4}>
+    <Grid
+      item
+      xs={12}
+      sm={isHighlight ? 12 : 6}
+      md={isHighlight ? 12 : 4}
+    >
       <Card>
         {featuredImage && (
           <CardMedia

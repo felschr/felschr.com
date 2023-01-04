@@ -7,6 +7,9 @@ import { BsMastodon } from "react-icons/bs"
 import { Link as GatsbyLink } from "gatsby"
 import { Footer } from "../atoms/Footer"
 
+// this adds typings for using `theme.vars`
+import type {} from "@mui/material/themeCssVarsAugmentation"
+
 const pages = [
   { title: "Home", to: "/" },
   { title: "Blog", to: "/blog" },

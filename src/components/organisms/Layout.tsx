@@ -76,7 +76,7 @@ const Layout = ({ pageTitle, preTitle, children }: LayoutProps) => {
       <Footer>
         <Tooltip title="GitLab">
           <Link rel="me" href="https://gitlab.com/felschr">
-            <FaGitlab />
+            <FaGitlab size="1.25em" />
           </Link>
         </Tooltip>
         <Tooltip title="GitHub">
@@ -86,7 +86,7 @@ const Layout = ({ pageTitle, preTitle, children }: LayoutProps) => {
         </Tooltip>
         <Tooltip title="Mastodon">
           <Link rel="me" href="https://todon.eu/@felschr">
-            <BsMastodon />
+            <BsMastodon size="1.25em" />
           </Link>
         </Tooltip>
         <Tooltip title="LinkedIn">

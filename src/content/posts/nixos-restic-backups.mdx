@@ -1,78 +1,112 @@
 ---
 title: Optimised Backups on NixOS with restic & fd
 published: 2022-08-01
-updated: 2022-08-01
+updated: 2023-01-07
 featuredImage: ../../images/nixos-restic.png
 featuredImageAlt: NixOS plus Restic
 ---
 
-#### UPDATE 2022-07-04
+I'd like to present a simple restic backup configuration I've been using that allows excluding a lot of unnecessary files via ignore patterns & by respecting `.gitignore`, thus shrinking backup sizes.
 
-After using this approach for a while I noticed a couple of downsides. The first most obvious is that all paths created by the [`dynamicFilesFrom`](https://search.nixos.org/options?channel=unstable&show=services.restic.backups.%3Cname%3E.dynamicFilesFrom&from=0&size=15&sort=relevance&type=packages&query=services.restic.backups.%3Cname%3E.dynamicFilesFrom) clutter the logs. More problematic is that restic's incremental backups only work properly when backup paths don't change ([#2246](https://github.com/restic/restic/issues/2246)). This causes restic to rescan all files on every run, and the prune job won't clean up all past backups.
-Thus, my current recommendation is using [`paths`](https://search.nixos.org/options?channel=unstable&show=services.restic.backups.%3Cname%3E.paths&from=0&size=15&sort=relevance&type=packages&query=services.restic.backups.%3Cname%3E.paths) and excluding files by using `--exclude-file` in [`extraBackupArgs`](https://search.nixos.org/options?channel=unstable&show=services.restic.backups.%3Cname%3E.extraBackupArgs&from=0&size=15&sort=relevance&type=packages&query=services.restic.backups.%3Cname%3E.extraBackupArgs).
-I'll update this post later with full instructions & a way to still backups source directories while respecting `.gitignore` files.
+#### The Problem
 
-#### Introduction
+Backups are important but not all files need to be backed up.
+Excluding paths from our backups can be very useful when we know the data is reproducible. E.g., if the target system runs podman containers that are all declared via NixOS options we don't really need most of the data in `/var/lib/containers`. When using volumes, though, `/var/lib/containers/storage/volumes` should be backed up.
+Other examples of files to exclude would be: caches, temporary files, artifacts in development directories.
+We might also decide that some data, while not reproducible, just isn't important to back up.
 
-I'd just like to present a simple restic backup configuration I've been using that allows excluding a lot of unnecessary files via ignore patterns & by respecting `.gitignore`, thus shrinking backup sizes.
+#### Restic
+
+For my personal needs I've decided to use [restic](https://restic.net) as my backup solution. I won't go into the details why I chose it over other solutions, but some of the reasons I went with restic are:
+- existing NixOS module
+- many storage options (e.g. Backblaze)
+- incremental backups
+- deduplication
+- strong encryption
+- zstd compression
+
+In my experience restic is easy to use, fast & has some powerful options.
+
+#### Finding the right approach
 
 While the NixOS options for restic allow specifying paths to include via [`services.restic.backups.<name>.paths`](https://search.nixos.org/options?channel=unstable&show=services.restic.backups.%3Cname%3E.paths&from=0&size=15&sort=relevance&type=packages&query=services.restic.backups.%3Cname%3E.paths) there is no native option to add exclusion patterns.
-However, we can use [`services.restic.backups.<name>.dynamicFilesFrom`](https://search.nixos.org/options?channel=unstable&show=services.restic.backups.%3Cname%3E.dynamicFilesFrom&from=0&size=15&sort=relevance&type=packages&query=services.restic.backups.%3Cname%3E.dynamicFilesFrom) which expects a script that produces a list of paths to back up. This allows us to use other tools to create more granular inclusions.
+So I've looked at the other options and found [`services.restic.backups.<name>.dynamicFilesFrom`](https://search.nixos.org/options?channel=unstable&show=services.restic.backups.%3Cname%3E.dynamicFilesFrom&from=0&size=15&sort=relevance&type=packages&query=services.restic.backups.%3Cname%3E.dynamicFilesFrom), which expects a script that produces a list of paths to back up.  
+This is great. My initial ideas was to generate a list of all files we want to back up, but this would become huge and even worse, restic's parent-snapshot detection will fail when paths used for [`--files-from`](https://restic.readthedocs.io/en/stable/040_backup.html?highlight=exclude-file#including-files) change ([#2246](https://github.com/restic/restic/issues/2246)).
 
-#### Path matching
+So, instead I need to do the opposite: have few backup paths and exlude a list of files to ignore.
+Looking further into restic's documentation, I found the option [`--exclude-file`](https://restic.readthedocs.io/en/stable/040_backup.html?highlight=exclude-file#excluding-files) which does exactly that.
+We can use this option in NixOS via [`services.restic.backups.<name>.extraBackupArgs`](https://search.nixos.org/options?channel=unstable&show=services.restic.backups.%3Cname%3E.extraBackupArgs&from=0&size=15&sort=relevance&type=packages&query=services.restic.backups.%3Cname%3E.extraBackupArgs)
 
-I've opted to use [`fd`](https://github.com/sharkdp/fd) in my configuration to generate the inclusion list. I've previously tried using `rg --files` but it doesn't match empty directories which can become an issue with services that expect certain paths to exist (PostgreSQL is one such example).
-
-By default, `fd` ignores hidden files & respects various ignore files (`.gitignore`, `.ignore` & `.fdignore`).
-We definitely want to include hidden files in backups, so we'll use `fd`'s `--hidden` argument.
-Respecting ignore files on the other hand can be very useful to exclude caches & artefacts which can easily be reproduced. If you don't want this behaviour, it can be disabled with `--no-ignore`.
-
-#### Excluding
-
-Excluding paths from our backups can be very useful when we know the data is reproducible. E.g., if the target system runs podman containers that are all declared via NixOS options we don't really need most of the data in `/var/lib/containers`. When using volumes, though, `/var/lib/containers/storage/volumes` should be backed up.
+Now that we found a way that allows us to exclude bloat from our backups, let's look how that might look in practise next.
 
 #### Full solution
 
-This is a simplified version of what I'm using in my desktop configuration. Hopefully some of these ignore patterns will fit for your use case.
-
-Note the use of `sed` to escape `[` & `]`, restic would otherwise complain about these paths.
+This is a simplified version of what I'm using in my desktop configuration. For a complete list check out my [actual config](https://gitlab.com/felschr/nixos-config/-/blob/main/services/restic/home-pc.nix). Hopefully some of these ignore patterns will fit your use case.
 
 ```nix
-services.restic.backups.full = let
-  paths = [ "/etc/nixos" "/var/lib/" "/home" ];
-  ignorePatterns = [
-    "/var/lib/systemd"
-    "/var/lib/containers"
-    "/var/lib/lxcfs"
-    "/var/lib/docker"
-    "/var/lib/flatpak"
-    "/home/*/.local/share/Trash"
-    "/home/*/.cache"
-    "/home/*/Downloads"
-    "/home/*/.npm"
-    "/home/*/Games"
-    "/home/*/.steam"
-    "/home/*/.local/share/containers"
-    "/home/*/.local/share/Steam"
-    "/home/*/.local/share/lutris"
-    "**/.git"
-  ];
-in {
+services.restic.backups.full = {
   initialize = true;
   repository = "SOME-REPO";
   timeConfig.OnCalendar = "daily";
-  dynamicFilesFrom = let
-    paths_ = foldl (a: b: "${a} ${b}") "" paths;
+  paths = [ "/etc/nixos" "/var/lib/" "/home" ];
+  extraBackupArgs = let
+    ignorePatterns = [
+      "/var/lib/systemd"
+      "/var/lib/containers"
+      "/var/lib/flatpak"
+      "/home/*/.local/share/Trash"
+      "/home/*/.cache"
+      "/home/*/Downloads"
+      "/home/*/.npm"
+      "/home/*/Games"
+      "/home/*/.local/share/containers"
+      "/home/felschr/dev" # backup ~/dev-backup instead
+      ".cache"
+      ".tmp"
+      ".log"
+      ".Trash"
+    ];
     ignoreFile = builtins.toFile "ignore"
       (foldl (a: b: a + "\n" + b) "" ignorePatterns);
-  in ''
-    ${pkgs.fd}/bin/fd \
-      --hidden \
-      --ignore-file ${ignoreFile} \
-      . ${paths_} \
-      | sed "s/\[/\\\[/" | sed "s/\]/\\\]/"
+  in [ "--exclude-file=${ignoreFile}" ];
+  pruneOpts = [
+    "--keep-daily 7"
+    "--keep-weekly 4"
+    "--keep-monthly 3"
+    "--keep-yearly 1"
+  ];
+};
+```
+
+##### Respecting `.gitignore`
+
+As you might have noticed above, I've excluded my `~/dev` directory from backups.
+Since my development folder is huge and has lots of dependencies, build artifacts, etc., I've decided the best way to include it in my backups is to exclude everything that's mentioned in `.gitignore` files.
+
+For this, I've decided to tackle this by generating `~/dev-backup` in the pre-start script of restic's systemd service.
+In there I use [`rsync`](https://rsync.samba.org) to clone `~/dev` to `~/dev-backup`. With the `--filter` option rsync supports exclude files like `.gitignore` natively.
+By also providing the `--link-dest` option, we tell rsync to create links to the original files instead of duplicating them. This way we don't have any storage overhead for this setup.
+
+The resulting configuration looks like this:
+
+```nix
+systemd.services."restic-backups-full" = {
+  preStart = ''
+    rm -rf /home/felschr/dev-backup
+    ${pkgs.rsync}/bin/rsync \
+      -a --delete \
+      --filter=':- .gitignore' \
+      --link-dest=/home/felschr/dev \
+      /home/felschr/dev/ /home/felschr/dev-backup
   '';
 };
 ```
 
+I hope you found this small guide useful and I could spare you some of the pitfalls I ran into before.
+
 My full restic config can be found here: https://gitlab.com/felschr/nixos-config/tree/main/services/restic
+
+#### UPDATE 2023-01-07
+
+The article has been adjusted to fix an issue in the original approach.
+For more details of the changes check out the [git history](https://gitlab.com/felschr/felschr.com/-/commits/main/src/content/posts/nixos-restic-backups.mdx) of this article.

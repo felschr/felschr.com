@@ -7,3 +7,13 @@ body {
 a {
   color: rgb(51, 125, 255);
 }
+
+code {
+  border: 1px solid var(--mui-palette-divider);
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+a code {
+  color: var(--mui-palette-text-primary);
+}

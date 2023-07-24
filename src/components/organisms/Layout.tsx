@@ -85,7 +85,7 @@ const Layout = ({ pageTitle, preTitle, children }: LayoutProps) => {
           </Link>
         </Tooltip>
         <Tooltip title="Mastodon">
-          <Link rel="me" href="https://todon.eu/@felschr">
+          <Link rel="me" href="https://fosstodon.org/@felschr">
             <BsMastodon size="1.25em" />
           </Link>
         </Tooltip>

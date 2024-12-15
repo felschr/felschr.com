@@ -16,8 +16,8 @@ const config: GatsbyConfig = {
     {
       resolve: "gatsby-plugin-manifest",
       options: {
-        "icon": "src/images/icon.png"
-      }
+        icon: "src/images/icon.png",
+      },
     },
     {
       resolve: "gatsby-plugin-mdx",
@@ -25,12 +25,10 @@ const config: GatsbyConfig = {
         extensions: [".mdx", ".md"],
         gatsbyRemarkPlugins: [
           {
-            resolve: "gatsby-remark-highlight-code",
+            resolve: "gatsby-remark-prismjs",
             options: {
-              terminal: "carbon",
-              theme: "one-dark",
-              lineNumbers: true,
-            }
+              showLineNumbers: true,
+            },
           },
         ],
       },
@@ -43,14 +41,14 @@ const config: GatsbyConfig = {
       resolve: "gatsby-source-filesystem",
       options: {
         name: "images",
-        path: "./src/images/"
+        path: "./src/images/",
       },
     },
     {
       resolve: "gatsby-source-filesystem",
       options: {
         name: "pages",
-        path: "./src/content/pages/"
+        path: "./src/content/pages/",
       },
     },
     {
@@ -59,8 +57,8 @@ const config: GatsbyConfig = {
         name: "posts",
         path: "./src/content/posts/",
       },
-    }
-  ]
+    },
+  ],
 };
 
 export default config;

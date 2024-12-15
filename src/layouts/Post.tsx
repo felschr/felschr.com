@@ -1,17 +1,23 @@
-import React from "react"
-import { graphql, Link as GatsbyLink, PageProps } from "gatsby"
-import { GatsbyImage, getImage } from "gatsby-plugin-image"
-import { MDXRenderer } from "gatsby-plugin-mdx"
-import NavigateNextIcon from "@mui/icons-material/NavigateNext"
-import Layout from "../components/organisms/Layout"
+import React from "react";
+import { graphql, Link as GatsbyLink, PageProps } from "gatsby";
+import { GatsbyImage, getImage } from "gatsby-plugin-image";
+import { MDXProvider } from "@mdx-js/react";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import Layout from "../components/organisms/Layout";
 
-import { defineCustomElements as deckDeckGoHighlightElement } from "@deckdeckgo/highlight-code/dist/loader";
 import { Breadcrumbs, Link } from "@mui/material";
-import { Box } from "@mui/system"
-deckDeckGoHighlightElement();
+import { Box } from "@mui/system";
 
-const BlogPost = ({ data: { mdx }, path }: PageProps<Queries.BlogPostQuery>) => {
-  const featuredImage = getImage(mdx?.frontmatter?.featuredImage?.childImageSharp?.gatsbyImageData!)
+const mdxComponents = {};
+
+const BlogPost = ({
+  data: { mdx },
+  path,
+  children,
+}: PageProps<Queries.BlogPostQuery>) => {
+  const featuredImage = getImage(
+    mdx?.frontmatter?.featuredImage?.childImageSharp?.gatsbyImageData!
+  );
 
   return (
     <Layout
@@ -40,28 +46,25 @@ const BlogPost = ({ data: { mdx }, path }: PageProps<Queries.BlogPostQuery>) => 
             </Link>
           </Breadcrumbs>
           {featuredImage && (
-          <Box display="flex" justifyContent="center">
-            <GatsbyImage
-              image={featuredImage}
-              alt={mdx?.frontmatter?.featuredImageAlt ?? ""}
-            />
-          </Box>
+            <Box display="flex" justifyContent="center">
+              <GatsbyImage
+                image={featuredImage}
+                alt={mdx?.frontmatter?.featuredImageAlt ?? ""}
+              />
+            </Box>
           )}
         </>
       }
     >
-      <MDXRenderer>
-        {mdx?.body ?? ""}
-      </MDXRenderer>
+      <MDXProvider components={mdxComponents}>{children}</MDXProvider>
     </Layout>
-  )
-}
+  );
+};
 
 export const query = graphql`
   query BlogPost($id: String) {
     mdx(fields: { source: { eq: "posts" } }, id: { eq: $id }) {
       id
-      body
       frontmatter {
         title
         published
@@ -75,6 +78,6 @@ export const query = graphql`
       }
     }
   }
-`
+`;
 
-export default BlogPost
+export default BlogPost;

@@ -49,10 +49,10 @@ export const createPages = async ({
   const allEdges = results.data.allMdx.edges;
 
   const blogEdges = allEdges.filter(
-    (edge) => edge.node.fields.source === "posts"
+    (edge) => edge.node.fields.source === "posts",
   );
   const pageEdges = allEdges.filter(
-    (edge) => edge.node.fields.source === "pages"
+    (edge) => edge.node.fields.source === "pages",
   );
 
   blogEdges.forEach((edge, index) => {
@@ -80,7 +80,7 @@ export const createPages = async ({
       component: path.resolve("./src/layouts/Page.tsx"),
       context: {
         id: edge.node.id,
-        slug: edge.node.slug,
+        slug: edge.node.fields.slug,
       },
     });
   });

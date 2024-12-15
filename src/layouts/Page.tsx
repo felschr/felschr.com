@@ -1,15 +1,19 @@
-import * as React from "react"
-import { graphql, PageProps } from "gatsby"
-import { MDXRenderer } from "gatsby-plugin-mdx"
-import Layout from "../components/organisms/Layout"
+import * as React from "react";
+import { graphql, PageProps } from "gatsby";
+import { MDXProvider } from "@mdx-js/react";
+import Layout from "../components/organisms/Layout";
 
-const Page = ({ data: { mdx }, path }: PageProps<Queries.PageQuery>) => (
+const mdxComponents = {};
+
+const Page = ({
+  data: { mdx },
+  path,
+  children,
+}: PageProps<Queries.PageQuery>) => (
   <Layout pageTitle={mdx?.frontmatter?.title ?? ""}>
-    <MDXRenderer>
-      {mdx?.body ?? ""}
-    </MDXRenderer>
+    <MDXProvider components={mdxComponents}>{children}</MDXProvider>
   </Layout>
-)
+);
 
 export const query = graphql`
   query Page($id: String) {
@@ -21,6 +25,6 @@ export const query = graphql`
       }
     }
   }
-`
+`;
 
-export default Page
+export default Page;

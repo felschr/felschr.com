@@ -1,30 +1,44 @@
-import * as React from "react"
-import { ReactNode, useMemo } from "react"
-import { AppBar, Box, Button, Container, experimental_extendTheme as extendTheme, CssBaseline, Link, Toolbar, Typography, useTheme, Experimental_CssVarsProvider as CssVarsProvider, getInitColorSchemeScript, Tooltip } from "@mui/material"
-import CodeIcon from "@mui/icons-material/Code"
-import GitHubIcon from "@mui/icons-material/GitHub"
-import LinkedInIcon from "@mui/icons-material/LinkedIn"
-import { BsMastodon } from "react-icons/bs"
-import { FaGitlab } from "react-icons/fa"
-import { Link as GatsbyLink } from "gatsby"
-import { Footer } from "../atoms/Footer"
+import * as React from "react";
+import { ReactNode, useMemo } from "react";
+import {
+  AppBar,
+  Box,
+  Button,
+  Container,
+  experimental_extendTheme as extendTheme,
+  CssBaseline,
+  Link,
+  Toolbar,
+  Typography,
+  useTheme,
+  Experimental_CssVarsProvider as CssVarsProvider,
+  getInitColorSchemeScript,
+  Tooltip,
+} from "@mui/material";
+import CodeIcon from "@mui/icons-material/Code";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import { BsMastodon } from "react-icons/bs";
+import { FaGitlab, FaBluesky } from "react-icons/fa6";
+import { Link as GatsbyLink } from "gatsby";
+import { Footer } from "../atoms/Footer";
 
 // this adds typings for using `theme.vars`
-import type {} from "@mui/material/themeCssVarsAugmentation"
+import type {} from "@mui/material/themeCssVarsAugmentation";
 
 const pages = [
   { title: "Home", to: "/" },
   { title: "Blog", to: "/blog" },
-]
+];
 
 type LayoutProps = {
-  pageTitle: string
-  preTitle?: ReactNode
-  children: ReactNode
-}
+  pageTitle: string;
+  preTitle?: ReactNode;
+  children: ReactNode;
+};
 
 const Layout = ({ pageTitle, preTitle, children }: LayoutProps) => {
-  const theme = useTheme()
+  const theme = useTheme();
 
   return (
     <main style={{ border: 0 }}>
@@ -50,7 +64,6 @@ const Layout = ({ pageTitle, preTitle, children }: LayoutProps) => {
           >
             Felix Schröter
           </Typography>
-
           <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "end" }}>
             {pages.map(({ title, to }) => (
               <Button
@@ -67,7 +80,9 @@ const Layout = ({ pageTitle, preTitle, children }: LayoutProps) => {
         </Toolbar>
       </AppBar>
 
-      <Container style={{ marginTop: 68.5, marginBottom: 80, minHeight: "100%" }}>
+      <Container
+        style={{ marginTop: 68.5, marginBottom: 80, minHeight: "100%" }}
+      >
         {preTitle}
         <Typography variant="h1">{pageTitle}</Typography>
         {children}
@@ -89,18 +104,27 @@ const Layout = ({ pageTitle, preTitle, children }: LayoutProps) => {
             <BsMastodon size="1.25em" />
           </Link>
         </Tooltip>
+        <Tooltip title="Bluesky">
+          <Link rel="me" href="https://bsky.app/profile/felschr.com">
+            <FaBluesky size="1.25em" />
+          </Link>
+        </Tooltip>
         <Tooltip title="LinkedIn">
           <Link rel="me" href="https://www.linkedin.com/in/schroeter">
             <LinkedInIcon />
           </Link>
         </Tooltip>
-        <Typography component={GatsbyLink} to="/terms-of-service" color="inherit">
+        <Typography
+          component={GatsbyLink}
+          to="/terms-of-service"
+          color="inherit"
+        >
           Terms of Service
         </Typography>
       </Footer>
     </main>
-  )
-}
+  );
+};
 
 const theme = extendTheme({
   colorSchemes: {
@@ -109,8 +133,8 @@ const theme = extendTheme({
   },
   typography: {
     h1: { fontSize: 48, paddingBottom: 20 },
-  }
-})
+  },
+});
 
 const AppLayout = (props: LayoutProps) => {
   return (
@@ -119,7 +143,7 @@ const AppLayout = (props: LayoutProps) => {
       <CssBaseline enableColorScheme />
       <Layout {...props} />
     </CssVarsProvider>
-  )
-}
+  );
+};
 
-export default AppLayout
+export default AppLayout;

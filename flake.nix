@@ -11,7 +11,7 @@
           default = pkgs.mkShell {
             name = "env";
             buildInputs = with pkgs; [
-              nodejs_18
+              nodejs_22
 
               # linters & formatters
               nixfmt

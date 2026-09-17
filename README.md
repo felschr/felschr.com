@@ -91,8 +91,20 @@ git push origin main         # when the rebase is clean
 
 `git rerere` is enabled, so recurring conflicts on the same files (`build.mjs`,
 `package.json`, `README.md`, `.gitignore`) are resolved automatically after the
-first time. To sync unattended, run the script from a timer (e.g. a weekly
-systemd user timer) and push when it succeeds.
+first time.
+
+Syncing is automated by `.forgejo/workflows/upstream-sync.yml`, which runs on
+`git.felschr.com` (weekly, and via *Actions → Sync upstream → Run workflow*). It
+rebases `main` onto `upstream/main` and force-pushes when the rebase is clean;
+on conflict it aborts and opens an issue.
+
+Both workflows are scoped by forge, because this repo is mirrored origin →
+Codeberg and each instance reads `.forgejo/workflows/`:
+
+| Workflow        | Runs on            | Why                          |
+| --------------- | ------------------ | ---------------------------- |
+| `deploy.yml`    | `codeberg.org`     | Codeberg Pages hosts the site |
+| `upstream-sync.yml` | `git.felschr.com` | only origin can push      |
 
 ## License
 

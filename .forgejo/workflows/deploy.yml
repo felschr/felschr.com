@@ -16,6 +16,9 @@ concurrency:
 
 jobs:
   deploy:
+    # This repo is mirrored to git.felschr.com, which also reads this file but
+    # has no codeberg-* runner. Only Codeberg Pages can serve the site.
+    if: startsWith(forgejo.server_url, 'https://codeberg.org')
     runs-on: codeberg-small
     steps:
       - uses: actions/checkout@v4

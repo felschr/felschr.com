@@ -1,0 +1,53 @@
+name: Sync upstream
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'
+      timezone: UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    # Only the canonical instance (git.felschr.com) can push; the Codeberg
+    # mirror also reads this file, so skip it there.
+    if: startsWith(forgejo.server_url, 'https://git.felschr.com')
+    runs-on: native:host
+    steps:
+      - uses: https://code.forgejo.org/actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ forgejo.token }}
+
+      - name: Rebase onto upstream
+        run: |
+          git config user.name 'Felix Schröter'
+          git config user.email 'dev@felschr.com'
+          git config commit.gpgsign false
+          git remote add upstream https://github.com/singi-labs/sifa-page.git 2>/dev/null || true
+          git fetch upstream main
+          git rebase upstream/main
+
+      - name: Push
+        run: git push --force-with-lease origin main
+
+      - name: Open issue on conflict
+        if: failure()
+        env:
+          TOKEN: ${{ forgejo.token }}
+          SERVER: ${{ forgejo.server_url }}
+          REPO: ${{ forgejo.repository }}
+        run: |
+          git rebase --abort 2>/dev/null || true
+          body="Automatic rebase onto singi-labs/sifa-page failed. Resolve locally with scripts/upstream-sync.sh, then git push --force-with-lease origin main."
+          curl -sS -X POST "$SERVER/api/v1/repos/$REPO/issues" \
+            -H "Authorization: token $TOKEN" \
+            -H 'Content-Type: application/json' \
+            --data "{\"title\":\"Upstream sync failed\",\"body\":\"$body\"}"

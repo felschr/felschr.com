@@ -1,76 +1,100 @@
-# sifa-page
+# felschr.com
 
-A personal website generated from your [Sifa](https://sifa.id) profile data, styled after [academicpages.github.io](https://academicpages.github.io/). One Node script fetches your public profile and builds a multi-page static site: a page per section (publications, talks, career, education, awards, and so on), a top nav, and a footer pointing back to Sifa.
+My personal website, generated from my [Sifa](https://sifa.id) profile.
 
-No login, no auth. The site is the public visitor view of your profile, rebuilt on every build.
+Built on the [`sifa-page`](https://github.com/singi-labs/sifa-page) scaffold: one
+Node script fetches the public profile from the Sifa API and writes a multi-page
+static site to `dist/`. See [NOTICE](NOTICE) for upstream attribution.
 
-Inspired by [academicpages.github.io](https://academicpages.github.io/), the popular Jekyll template for academic personal sites. This project borrows the layout and information architecture; the implementation is independent and the data source is your Sifa (AT Protocol) profile rather than hand-edited markdown files.
-
-## How it works
-
-The build script fetches the Markdown export of your profile from `https://sifa.id/p/<username>.md`, splits it into sections, and renders each section as its own HTML page with a shared layout and stylesheet. Empty sections are dropped automatically.
-
-The rendering logic lives in [`@singi-labs/sifa-page-renderer`](https://github.com/singi-labs/sifa-page-renderer) -- this repo is the self-hosting scaffold that fetches data and writes static files.
-
-## Use
+## Develop
 
 ```bash
-npm install
-SIFA_ID=did:plc:xxxxxxxxxxxxxxxxxxxxxxxx npm run build
+nix develop          # node 26
+npm ci
+npm run build        # writes dist/
+npm run dev          # build + local preview
 ```
 
-Then preview the generated `dist/` folder:
+The profile is identified by DID by default (`SIFA_ID` in `build.mjs`). Override
+with environment variables (see `.env.example`):
 
-```bash
-npx serve dist
-```
-
-Set `SIFA_ID` to your Sifa **DID** or username. A username also works:
-
-```bash
-SIFA_ID=yourname.example npm run build
-```
-
-### Prefer your DID for a site that never breaks
-
-`SIFA_ID` accepts either a DID (`did:plc:...` / `did:web:...`) or a username. **Use your DID.** A DID is your permanent AT Protocol identity; a username can change (you might move to a new domain). If you configure a username and later change it, the build would point at the old, now-dead username. A DID never changes, and the build resolves your *current* username from your profile each time it runs -- so a username change is picked up automatically on the next rebuild, with no config edit.
-
-Find your DID: open **Settings → Account** on [`sifa.id`](https://sifa.id) and copy it there.
-
-For backward compatibility, `SIFA_DID` and `SIFA_HANDLE` are still read (in that order) if `SIFA_ID` is unset.
+| Variable    | Default                                | Purpose                          |
+| ----------- | -------------------------------------- | -------------------------------- |
+| `SIFA_ID`   | `did:plc:cdf642lfvjvoafw4uepycezk`     | Sifa DID or handle to render     |
+| `SIFA_BASE` | `https://sifa.id`                      | Sifa API base                    |
+| `SITE_URL`  | `https://felschr.com`                  | Canonical URL for metadata       |
 
 ## Deploy
 
-`dist/` is plain static HTML and CSS. Deploy it anywhere: GitHub Pages, Netlify, Cloudflare Pages, or your own server. Rebuild on push or on a schedule so the site picks up profile edits.
+`.forgejo/workflows/deploy.yml` builds the site and publishes `dist/` to
+[Codeberg Pages](https://codeberg.page) via
+[`actions/git-pages`](https://codeberg.org/git-pages/action), served at
+`https://felschr.com/`.
 
-### Publish to GitHub Pages (no local build)
+### One-time setup
 
-This repo ships a GitHub Actions workflow ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)) that builds the site and publishes it to GitHub Pages on every push. To host your own profile this way:
+On the Codeberg mirror (`codeberg.org/felschr/felschr.com`):
 
-1. **Fork** this repo to your account.
-2. In your fork, go to **Settings → Secrets and variables → Actions → Variables** and add a repository variable named `SIFA_ID` set to your Sifa **DID** (`did:plc:...`). A username works too, but a DID survives username changes (see above).
-3. Go to **Settings → Pages** and set **Source** to **GitHub Actions**.
-4. Run the workflow: **Actions → Deploy site → Run workflow**, or just push a commit. Your site publishes at `https://<your-username>.github.io/<repo-name>/`.
+1. **Enable Actions** — repo *Settings → Units → Overview → Actions*, then save.
+2. Make sure the repo is public and `main` (with the workflow) is
+   mirrored/pushed to Codeberg.
 
-Profile edits show up the next time the workflow runs. To keep the site current automatically, add a `schedule:` trigger to the workflow (a daily cron, for example) so it rebuilds without a push.
+Because the Codeberg repo is a mirror, syncs do **not** emit a `push` event
+(and Forgejo has no mirror event), so the workflow also runs on a daily
+schedule and via `workflow_dispatch`. Trigger it manually after the first
+mirror sync.
 
-### Use your own domain
+DNS for `felschr.com` (Cloudflare, apex, DNS-only / grey cloud):
 
-GitHub Pages supports custom domains. In your fork, go to **Settings → Pages → Custom domain**, enter your domain (`cv.alice.com`), and add the DNS record GitHub asks for at your DNS provider: a `CNAME` to `<your-username>.github.io` for a subdomain, or the Pages apex records for a root domain. GitHub's [custom-domain docs](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site) list the exact records. Once it verifies, your site serves from your domain over HTTPS.
+| Type | Name                          | Value                                   |
+| ---- | ----------------------------- | --------------------------------------- |
+| A    | `@`                           | `217.197.84.141`                        |
+| AAAA | `@`                           | `2a0a:4580:103f:c0de::2`                |
+| TXT  | `_git-pages-forge-allowlist`  | `https://codeberg.org/felschr/felschr.com.git` |
 
-This is the domain your website is served from, separate from your [Sifa username domain](https://docs.sifa.id/docs/use-your-own-domain).
+> The apex has ProtonMail MX/TXT records, so a CNAME is not possible; use the
+> A/AAAA records above. They replace the current nginx A/AAAA. See the
+> [Codeberg Pages custom domain docs](https://docs.codeberg.org/codeberg-pages/using-custom-domain/)
+> for details and alternatives (Cloudflare CNAME flattening, `www` redirects).
 
-## Using the renderer programmatically
+## `.well-known` endpoints
 
-The `@singi-labs/sifa-page-renderer` package is framework-agnostic -- import it from any Node.js script, Next.js Route Handler, or SSG:
+`felschr.com` previously served `/.well-known/*` (WebFinger, WKD) via nginx.
+A static host cannot reverse-proxy, so `static/_redirects` redirects every
+`/.well-known/` request to `web.felschr.com`:
 
-```javascript
-import { parseSections, renderHome, renderSectionPage } from '@singi-labs/sifa-page-renderer';
-import { CSS } from '@singi-labs/sifa-page-renderer/style';
+```
+/.well-known/*  https://web.felschr.com/.well-known/:splat  302
 ```
 
-See the [package README](https://github.com/singi-labs/sifa-page-renderer) for the full API.
+`web.felschr.com` serves the dynamic responses (the nginx blocks move there).
+git-pages forwards the query string, so `?resource=` (WebFinger) and `?l=`
+(WKD) survive.
 
-## Status
+> WKD clients MUST follow HTTPS redirects
+> ([draft-koch §5](https://datatracker.ietf.org/doc/html/draft-koch-openpgp-webkey-service-22#section-5));
+> WebFinger clients MAY. Also note clients try WKD advanced mode
+> (`openpgpkey.felschr.com`) first and only fall back to direct mode if that
+> subdomain does not exist.
 
-Proof of concept. The layout, sections, and footer are starting points to adapt to your own style.
+## Upstream
+
+This repo started as a copy of
+[`sifa-page`](https://github.com/singi-labs/sifa-page) and is rebased onto it.
+`upstream` points at the GitHub repo; our changes sit as a single overlay commit
+on top of upstream's history.
+
+```bash
+scripts/upstream-sync.sh     # fetch + rebase onto upstream/main
+git push origin main         # when the rebase is clean
+```
+
+`git rerere` is enabled, so recurring conflicts on the same files (`build.mjs`,
+`package.json`, `README.md`, `.gitignore`) are resolved automatically after the
+first time. To sync unattended, run the script from a timer (e.g. a weekly
+systemd user timer) and push when it succeeds.
+
+## License
+
+[MIT](LICENSE) for this repo. Bundled fonts and Sifa assets are covered by
+[NOTICE](NOTICE).

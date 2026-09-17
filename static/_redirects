@@ -1,0 +1,7 @@
+# All .well-known endpoints live on web.felschr.com (WebFinger, WKD, ...).
+#
+# Codeberg Pages cannot reverse-proxy, so this redirects instead. WKD clients
+# MUST follow HTTPS redirects (draft-koch-openpgp-webkey-service, Security
+# Considerations) and git-pages forwards the query string, so ?resource= / ?l=
+# reach web.felschr.com unchanged.
+/.well-known/*  https://web.felschr.com/.well-known/:splat  302

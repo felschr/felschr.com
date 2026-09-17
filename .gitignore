@@ -2,3 +2,15 @@ node_modules/
 dist/
 .DS_Store
 .gstack/
+
+# dotenv environment variables file
+.env
+.env.*
+!.env.example
+
+# direnv
+.direnv/
+.envrc
+
+# nix
+/result

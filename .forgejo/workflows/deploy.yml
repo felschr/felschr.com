@@ -1,0 +1,36 @@
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+  # The Codeberg repo is a mirror: syncs do not emit a push event, so rebuild
+  # on a schedule to pick up mirrored commits and Sifa profile changes.
+  schedule:
+    - cron: '0 2 * * *'
+      timezone: UTC
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: codeberg-small
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - uses: actions/git-pages@v2
+        with:
+          site: https://felschr.com/
+          server: codeberg.page
+          token: ${{ forgejo.token }}
+          source: dist/

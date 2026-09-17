@@ -31,8 +31,9 @@ import { CSS } from '@singi-labs/sifa-page-renderer/style';
 // renderer's links) is re-resolved from the DID at build time, so the configured
 // input never goes stale. SIFA_ID is the recommended unified var; SIFA_DID /
 // SIFA_HANDLE stay supported for convenience and backward compat.
-const SIFA_ID = process.env.SIFA_ID ?? process.env.SIFA_DID ?? process.env.SIFA_HANDLE ?? 'ronentk.me';
+const SIFA_ID = process.env.SIFA_ID ?? process.env.SIFA_DID ?? process.env.SIFA_HANDLE ?? 'did:plc:cdf642lfvjvoafw4uepycezk';
 const SIFA_BASE = process.env.SIFA_BASE ?? 'https://sifa.id';
+const SITE_URL = process.env.SITE_URL ?? 'https://felschr.com';
 const OUT = 'dist';
 const config = { baseUrl: SIFA_BASE };
 
@@ -43,26 +44,22 @@ const now = new Date();
 const ctx = { year: now.getFullYear(), updated: now.toISOString().slice(0, 10) };
 
 /**
- * Canonical + social metadata, mirroring sifa-web's `/site` route so a link
- * shared from this site previews identically to one shared from page.sifa.id.
- *
- * Canonical (and og:url with it) points at the Sifa profile page rather than
- * this site: ranking signal consolidates there instead of diluting across
- * self-hosted copies of the same profile. The card is the same profile image
- * sifa.id renders. Self-hosters who want their own domain to be the canonical
- * one can change both here.
+ * Canonical + social metadata. This is the primary personal website on our own
+ * domain, so canonical (and og:url) point here rather than at sifa.id. The
+ * social card is still the profile image sifa.id renders. Set SITE_URL to
+ * override the domain.
  */
 function seoCtx(profile, handle) {
-  const canonical = `${SIFA_BASE}/p/${handle}`;
+  const canonical = `${SITE_URL}/`;
   const displayName = profile.displayName ?? handle;
   return {
     canonical,
     og: {
       title: profile.displayName ? `${profile.displayName} (@${handle})` : handle,
-      description: `${displayName}'s personal site on Sifa.`,
+      description: `${displayName}'s personal site.`,
       url: canonical,
       image: `${SIFA_BASE}/p/${encodeURIComponent(handle)}/site/card`,
-      siteName: 'Sifa',
+      siteName: 'Felix Schröter',
       type: 'profile',
     },
   };
@@ -108,6 +105,7 @@ async function main() {
   await mkdir(OUT, { recursive: true });
   cpSync('fonts', `${OUT}/fonts`, { recursive: true });
   cpSync('assets', `${OUT}/assets`, { recursive: true });
+  cpSync('static', OUT, { recursive: true }); // _redirects, _headers, .well-known
 
   await writeFile(`${OUT}/index.html`, renderHome(profile, sections, pageCtx));
   let pages = 1;

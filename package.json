@@ -1,9 +1,11 @@
 {
-  "name": "sifa-page",
-  "version": "0.1.0",
-  "description": "A personal website generated from your Sifa profile data.",
+  "name": "felschr.com",
+  "version": "1.0.0",
+  "description": "My personal website, generated from my Sifa profile.",
+  "author": "Felix Schröter",
   "license": "MIT",
   "type": "module",
+  "keywords": ["sifa", "atproto", "personal-website"],
   "scripts": {
     "build": "node build.mjs",
     "dev": "node build.mjs && npx --yes serve dist"

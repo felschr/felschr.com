@@ -19,7 +19,7 @@ jobs:
     # Only the canonical instance (git.felschr.com) can push; the Codeberg
     # mirror also reads this file, so skip it there.
     if: startsWith(forgejo.server_url, 'https://git.felschr.com')
-    runs-on: native:host
+    runs-on: native
     steps:
       - uses: https://code.forgejo.org/actions/checkout@v4
         with:

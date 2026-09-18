@@ -80,23 +80,25 @@ git-pages forwards the query string, so `?resource=` (WebFinger) and `?l=`
 ## Upstream
 
 This repo started as a copy of
-[`sifa-page`](https://github.com/singi-labs/sifa-page) and is rebased onto it.
-`upstream` points at the GitHub repo; our changes sit as a single overlay commit
-on top of upstream's history.
+[`sifa-page`](https://github.com/singi-labs/sifa-page). `upstream` points at the
+GitHub repo, and `main` is kept in sync by **merging** `upstream/main` into it.
+History is preserved: upstream commits are never rewritten, and each sync adds a
+merge commit on top of our local changes.
 
 ```bash
-scripts/upstream-sync.sh     # fetch + rebase onto upstream/main
-git push origin main         # when the rebase is clean
+scripts/upstream-sync.sh     # fetch + merge upstream/main
+git push origin main         # when the merge is clean
 ```
 
-`git rerere` is enabled, so recurring conflicts on the same files (`build.mjs`,
-`package.json`, `README.md`, `.gitignore`) are resolved automatically after the
-first time.
+If the merge conflicts, resolve it locally, commit the merge, and push. `git
+rerere` helps with recurring conflicts; enable it once with
+`git config rerere.enabled true`. That is a local convenience only — the CI
+runner starts from a fresh clone and cannot reuse the cache.
 
 Syncing is automated by `.forgejo/workflows/upstream-sync.yml`, which runs on
 `git.felschr.com` (weekly, and via *Actions → Sync upstream → Run workflow*). It
-rebases `main` onto `upstream/main` and force-pushes when the rebase is clean;
-on conflict it aborts and opens an issue.
+merges `upstream/main` into `main` and pushes when the merge is clean; on
+conflict it aborts and opens an issue.
 
 Both workflows are scoped by forge, because this repo is mirrored origin →
 Codeberg and each instance reads `.forgejo/workflows/`:

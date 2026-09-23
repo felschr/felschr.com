@@ -8,6 +8,7 @@
   "keywords": ["sifa", "atproto", "personal-website"],
   "scripts": {
     "build": "node build.mjs",
+    "postbuild": "node scripts/inject-analytics.mjs",
     "dev": "node build.mjs && npx --yes serve dist"
   },
   "dependencies": {

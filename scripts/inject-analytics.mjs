@@ -6,7 +6,7 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 
 const OUT = 'dist';
 const SNIPPET = `<!-- Privacy-friendly analytics by Plausible -->
-<script async src="https://plausible.atvari.eu/js/pa-umj4Or2X12wm8TW4Chy1S.js"></script>
+<script async src="https://visits.atvari.eu/js/pa-umj4Or2X12wm8TW4Chy1S.js"></script>
 <script>
   window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
   plausible.init()
